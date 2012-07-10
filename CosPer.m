@@ -2,12 +2,13 @@
 
 (********1*********2*********3*********4*********5*********6*********7*****
  * CosPer.m = General Relativity, Einstein, Cosmology, Cosmological Perturbation 
- * Written by MA[family name] Lei: arlen.marvin@gmail.com
+ * Written/Modified by MA[family name] Lei: arlen.marvin@gmail.com
  *                                   Department of Phsics, Fudan University
  *                                   http://multiverse.lamost.org
  *                                   http://iastro.lamost.org
  * 
- * Based on:
+ * Background part is extracted from:
+ *
  * GREAT.m = General Relativity, Einstein & All That 4 Mathematica
  * written by Tristan Hubsch: thubsch@howard.edu
  *                                    Howard University Physics
@@ -20,19 +21,18 @@
 
 BeginPackage["COSPER`"]
 
-(** Declare functions available after loading
- *                    by providing their usage explanation **)
+(** List of functions and their usage. If you need more explanation, please check the examples. **)
 
-IMetric::usage = "IMetric[g], with g an n.n-matrix (two lower indices),
-  returns the inverse metric (two upper indices)."
+IMetric::usage = "IMetric[g], with g an n.n-matrix (with two lower indices, i.e., \!\(\*SubscriptBox[\(g\), \(\[Alpha]\[Beta]\)]\)),
+  returns the inverse metric (with two upper indices, i.e., \!\(\*SuperscriptBox[\(g\), \(\[Alpha]\[Beta]\)]\))."
 
 Christoffel::usage = "Christoffel[g,x], with g a n.n-matrix and x
   n-vector of coordinates, gives the Christoffel symbol of the 2nd
-  kind (1st upper, two lower indices)." 
+  kind (1st upper, two lower indices, i.e., \!\(\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Beta]\[Gamma]\), \(\[Alpha]\)]\)=\!\(\*FractionBox[\(1\), \(2\)]\)\!\(\*SuperscriptBox[\(g\), \(\[Sigma]\[Rho]\)]\)(\!\(\*SubscriptBox[\(g\), \(\[Rho]\[Mu], \[Nu]\)]\)+\!\(\*SubscriptBox[\(g\), \(\[Nu]\[Rho], \[Mu]\)]\)-\!\(\*SubscriptBox[\(g\), \(\[Mu]\[Nu], \[Rho]\)]\)))." 
 
 Riemann::usage = "Riemann[g,x], with g a n.n-matrix and x n-vector of
   coordinates, gives the Riemann tensor (1st upper, three lower
-  indices)."
+  indices, i.e., \!\(\*SubsuperscriptBox[\(R\), \(\[Mu]\[Nu]\[Sigma]\), \(\[Rho]\)]\)=\!\(\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Mu]\[Sigma], \[Nu]\), \(\[Rho]\)]\)-\!\(\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Nu]\[Sigma], \[Mu]\), \(\[Rho]\)]\)+\!\(\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Sigma]\[Mu]\), \(\[Lambda]\)]\)\!\(\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Nu]\[Lambda]\), \(\[Rho]\)]\)-\!\(\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Sigma]\[Nu]\), \(\[Lambda]\)]\)\!\(\*SubsuperscriptBox[\(\[CapitalGamma]\), \(\[Mu]\[Lambda]\), \(\[Rho]\)]\))."
 
 Ricci::usage = "Ricci[g,x], with g a n.n-matrix and x n-vector of
   coordinates, gives the Ricci tensor (two lower symmetric indices)."
@@ -175,13 +175,14 @@ Block[{Dim, iMet, ddeltametric, PredelChristoffel, temp, delChristoffel, i, j, k
 		ddeltametric = Table[D[deltametric[[i,j]],x[[k]]],{i,Dim},{j,Dim},{k,Dim}];
 		temp = Table[ddeltametric[[i,j,k]] - Sum[deltametric[[i,l]]*Christoffel[metric,x][[l,j,k]],{l,Dim}]
 				 - Sum[deltametric[[l,j]]*Christoffel[metric,x][[l,i,k]],{l,Dim}],{i,Dim},{j,Dim},{k,Dim}];
+				(* Subscript[\[Delta]g, ij,k]-Subscript[\[Delta]g, il] Subsuperscript[\[CapitalGamma], jk, l]-Subscript[\[Delta]g, lj] Subsuperscript[\[CapitalGamma], ik, l] *)
         PredelChristoffel = 
 					Table[temp[[l,k,j]] + temp[[l,j,k]] - temp[[j,k,l]],
           	  {l,Dim},{k,Dim},{j,Dim} ];
-          	 (* The \{k,ij\} Christoffel symbols *)
+          	 (* Subscript[\[Delta]g, ij,k]-Subscript[\[Delta]g, il] Subsuperscript[\[CapitalGamma], jk, l]-Subscript[\[Delta]g, lj] Subsuperscript[\[CapitalGamma], ik, l] *)
 		 PredelChristoffel = Simplify[PredelChristoffel];
          delChristoffel = (1/2)iMet.PredelChristoffel;
-         (* Return the Christoffel symbol: *)
+         (* Dot: means g^il (temp[[l,k,j]]+temp[[l,j,k]]-temp[[j,k,l]]) *)
          Simplify[delChristoffel] ]
 
 (*
@@ -209,7 +210,7 @@ deltaRicci[metric_,deltametric_,x_]:=
 		deltaRicci = Table[Sum[Sum[ - deltaGamma[[l,i,k]]*Gamma[[k,j,l]] - deltaGamma[[k,j,l]]*Gamma[[l,i,k]],{l,Dim}],{k,Dim}]
 					 + Sum[ - D[deltaGamma[[k,i,k]],x[[j]]] + D[deltaGamma[[k,i,j]],x[[k]]],{k,Dim}]
 					 + Sum[Sum[deltaGamma[[l,i,j]]*Gamma[[k,k,l]] + deltaGamma[[k,k,l]]*Gamma[[l,i,j]],{k,Dim}],{l,Dim}],{i,Dim},{j,Dim}];
-          (* Return the Ricci tensor (two lower indices): *)
+          (* Return the perturbed Ricci tensor (two lower indices): *)
 (*BACKUP: (*This is another faster calculation but may give the wrong answer.*)
         deltaRicci1 = Tr[Transpose[dGamma,{1,3,2,4}],Plus,2] - Tr[Transpose[dGamma,{1,4,2,3}],Plus,2];
 		deltaRicci2 = Table[Sum[deltaGamma[[l,i,k]]*Gamma[[k,j,l]],{k,Dim},{l,Dim}]
@@ -262,7 +263,7 @@ deltaSCurvature[metric_,deltametric_,x_]:=
           iMet=IMetric[metric];
 		idelMet=IMetric[deltametric];
           deltaCurvatureScalar=Sum[idelMet[[i,j]]*Ricci[metric,x][[i,j]]+iMet[[i,j]]*deltaRicci[metric,deltametric,x][[i,j]],{i,Dim},{j,Dim}];
-    (*Return Scalar Curvature:*)Simplify[deltaCurvatureScalar]
+    (*Return perturbed Scalar Curvature:*)Simplify[deltaCurvatureScalar]
 		]
 
 deltaEinsteinTensor[metric_,deltametric_,x_]:=
@@ -306,6 +307,9 @@ EndPackage[]
 helpCOSPER
 
 Print["Enter 'helpCOSPER' for this list of functions"]
+
+
+
 
 
 
