@@ -2,12 +2,13 @@
 
 (********1*********2*********3*********4*********5*********6*********7*****
  * CosPer.m = General Relativity, Einstein, Cosmology, Cosmological Perturbation 
- * Written/Modified by MA[family name] Lei: arlen.marvin@gmail.com
- *                                   Department of Phsics, Fudan University
- *                                   http://multiverse.lamost.org
- *                                   http://iastro.lamost.org
+ * Written/Modified by MA[family name] Lei: leima137@gmail.com
+ *                                   ~~Department of Phsics, Fudan University~~
+ *                                   Department of Phsics and Astronomy, University of New Mexico
+ *                                   http://openmetric.org
+ *                                   http://neutrino.xyz
  * 
- * Background part is extracted from:
+ * Background part is improved based on:
  *
  * GREAT.m = General Relativity, Einstein & All That 4 Mathematica
  * written by Tristan Hubsch: thubsch@howard.edu
@@ -80,7 +81,7 @@ deltaEinsteinTensor::usage = "deltaEinsteinTensor[g,h,x], with g a nxn-matrix
 
 
 helpCOSPER::usage = "COSPER functions are: IMetric, Christoffel,
-  Riemann, Ricci, SCurvature, EinsteinTensor, SqRicci, SqRiemann, HubbleL."
+  Riemann, Ricci, SCurvature, EinsteinTensor, SqRicci, SqRiemann, HubbleL, deltaChristoffel, deltaRiemann, deltaRicci, deltaSCurvature, deltaEinsteinTensor."
 
 
 
@@ -297,7 +298,7 @@ Join[{{"Variable","Value","Units","Comment"},{"\!\(\*SubscriptBox[\(\[CapitalOme
 
 
 helpCOSPER:= Print["COSPER functions are: IMetric, Christoffel,
-  Riemann, Ricci, SCurvature, EinsteinTensor, SqRicci, SqRiemann."]
+  Riemann, Ricci, SCurvature, EinsteinTensor, SqRicci, SqRiemann, HubbleL, deltaChristoffel, deltaRiemann, deltaRicci, deltaSCurvature, deltaEinsteinTensor."]
 
 
 End[]
